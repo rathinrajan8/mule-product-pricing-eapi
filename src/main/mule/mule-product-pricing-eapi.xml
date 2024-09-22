@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="mule-product-pricing-eapi-main">
+        <http:listener config-ref="mule-product-pricing-eapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router doc:name="APIkit Router" doc:id="facf732f-9650-4de3-986e-19918d7465dd" config-ref="mule-product-pricing-eapi-config" />
+    </flow>
+    <flow name="put:\products\(productId)\update:application\json:mule-product-pricing-eapi-config">
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="productId">attributes.uriParams.'productId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform> [STUDIO] -->
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  productId: "ZFgjs000935140",
+  isSuccess: true
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+            </ee:message>
+        </ee:transform> [STUDIO] -->
+        <logger level="INFO" doc:name="Logger" doc:id="e266ef78-b7d8-442e-909f-5fa45dbe4bc4" message="dd"/>
+		<flow-ref doc:name="Call update-product-sub-flow" doc:id="a6d3644b-e09c-45f7-b401-b1035882e484" name="update-product-sub-flow" />
+    </flow>
+    <flow name="delete:\products\(productId)\delete:mule-product-pricing-eapi-config">
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="productId">attributes.uriParams.'productId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform> [STUDIO] -->
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  productId: "ZFgjs000935140",
+  isSuccess: true
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+            </ee:message>
+        </ee:transform> [STUDIO] -->
+        <flow-ref doc:name="Call delete-products-sub-flow" doc:id="8f696869-52db-4547-8749-9f01f28d352f" name="delete-products-Sub-Flow" />
+    </flow>
+    <flow name="get:\healthcheck:mule-product-pricing-eapi-config">
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  "API Name": "sys-salesforce",
+  Status: "Success"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+            </ee:message>
+        </ee:transform> [STUDIO] -->
+        <flow-ref doc:name="Call health-check-sub-flow" doc:id="76421216-444c-4442-b329-ce2e0dfa53bf" name="health-check-Sub-Flow" />
+    </flow>
+    <flow name="get:\products:mule-product-pricing-eapi-config">
+        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+[
+  {
+    productId: "Axjs00098919",
+    productCode: "SM0007",
+    name: "Samsung A53",
+    productPrice: 20000,
+    currencyCode: "INR",
+    description: "Snapdragon 6s"
+  }, 
+  {
+    productId: "Bsjs000935679",
+    productCode: "SM0008",
+    name: "Samsung A54",
+    productPrice: 25000,
+    currencyCode: "INR",
+    description: "Snapdragon 8s"
+  }, 
+  {
+    productId: "ZFgjs000935140",
+    productCode: "SM0008",
+    name: "Samsung S24 Ultra",
+    productPrice: 76000,
+    currencyCode: "INR",
+    description: "Snapdragon 600"
+  }
+&#93; as Array {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
+            </ee:message>
+        </ee:transform> [STUDIO] -->
+        <flow-ref doc:name="Call get-products-sub-flow" doc:id="db4d9bcb-d9be-447f-b89b-75f47a0248f0" name="get-products-Sub-Flow" />
+    </flow>
+    <flow name="post:\products\create:application\json:mule-product-pricing-eapi-config">
+        <flow-ref doc:name="Call create-product-sub-flow" doc:id="67ef3850-d38b-434e-84d6-50c11b3db9e2" name="create-product-Sub-Flow" />
+    </flow>
+</mule>

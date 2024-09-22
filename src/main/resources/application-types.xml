@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog/>
+  <types:enrichment select="#443af4eb-ca14-4357-894c-1e0fcadc2e12">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="null"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d005c1b2-6d98-4c58-a569-d51d262014d3"/>
+</types:mule>

@@ -1,0 +1,27 @@
+api:
+  id: "19951123"
+truststore:
+  path: "truststore.ts"
+  alias: "mule"
+
+keystore:
+  path: "keystore.jks"
+  alias: "mule"
+  
+
+  
+product-pricing-papi:
+  host: "mule-product-pricing-papi.us-e2.cloudhub.io"
+  port: "443"
+
+    
+  
+max:
+  retry: "3"
+  time: "10000"
+  
+scheduler:
+  cron: "0 00 00 ? * *"
+  timeZone: "UTC"
+  
+   

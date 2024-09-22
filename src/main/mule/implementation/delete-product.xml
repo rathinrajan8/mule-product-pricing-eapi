@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="delete-products-Sub-Flow" doc:id="443af4eb-ca14-4357-894c-1e0fcadc2e12" >
+		<logger level="INFO" doc:name="delete flow starts" doc:id="b63451d6-5403-469f-9bca-e1d060cb2631" message="delete flow starts" />
+		<ee:transform doc:name="Set Method and Path" doc:id="1b5db24f-7d50-4e8b-99eb-2758f5f9b57c">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="method"><![CDATA["DELETE"]]></ee:set-variable>
+				<ee:set-variable variableName="path"><![CDATA[p('product-pricing-papi.deleteProductPath')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Call Mule Product Pricing Papi" doc:id="a60038f3-6aa9-4696-8b82-aa7f606cf08a" name="product-pricing-papi-request-common-flow" />
+		<choice doc:name="Choice" doc:id="8a407485-3306-4b42-8977-4b6c5644a277">
+			<when expression="#[isEmpty(vars.errorPayload)]">
+				<ee:transform doc:name="Convert to Json" doc:id="6a43e5d6-b378-46b0-8f88-c34e00b61ad0">
+					<ee:message>
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<raise-error doc:name="Raise SFDC:DELETE_PRODUCTS_FAILED Error" doc:id="63b025c4-ab1b-4b9d-8ea0-da026822a2d7" type="SFDC:DELETE_PRODUCTS_FAILED" description="#[vars.errorPayload]" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="delete flow ends" doc:id="8c7dbb49-bf6d-4743-b918-69ff2ea0f464" message="delete flow ends"/>
+	
+</sub-flow></mule>
