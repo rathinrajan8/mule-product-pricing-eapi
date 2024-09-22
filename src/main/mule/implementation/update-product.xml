@@ -14,6 +14,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:set-variable variableName="path" ><![CDATA[p('product-pricing-papi.updateProductPath')]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<flow-ref doc:name="Call Mule Product Pricing Papi" doc:id="1e3a77bd-9242-4eca-9a17-c7faa2ed2e13" name="product-pricing-papi-request-common-flow" />
 		<choice doc:name="Choice" doc:id="05f084b6-fa9b-449c-9e71-48df91770a71" >
 			<when expression="#[isEmpty(vars.errorPayload)]" >
 				<ee:transform doc:name="Convert to Json" doc:id="77de1d2e-7b06-4a98-81bc-d7f11c23a05b" >

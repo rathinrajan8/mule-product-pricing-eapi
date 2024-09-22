@@ -40,7 +40,16 @@ payload
 			
 </ee:message>
 		</ee:transform>
-			
+				<choice doc:name="Choice" doc:id="06dc6f1a-adef-4918-91e8-2759848cc6b3" >
+					<when expression="#[isEmpty(payload map ($.isSuccess) filter ($ == false))&#93;">
+						<logger level="INFO" doc:name="Log All Product Success" doc:id="16ea2dce-802a-4160-be7f-024d6f509d27" message="#['All products created successfully'&#93;"/>
+					</when>
+					<otherwise >
+						<set-variable value="#[500&#93;" doc:name="Set httpStatus" doc:id="db68ae8a-6126-4de3-8df3-6458dee0a76b" variableName="httpStatus"/>
+						<logger level="INFO" doc:name="Log Few Products Failed" doc:id="d1ca006a-944d-4e5b-ac47-94d4eea9953c" message="#['Few products failed to create'&#93;"/>
+					</otherwise>
+				</choice> 
+
 </when>
 			<otherwise >
 				<raise-error doc:name="Raise SFDC:CREATE_PRODUCTS_FAILED Error" doc:id="bdc1b3dd-cf61-4e6d-aead-e2021caec1bf" type="SFDC:CREATE_PRODUCTS_FAILED" description="#[vars.errorPayload]" />
