@@ -29,7 +29,8 @@ output application/json skipNullOn="everywhere"
 ---
 {
 	"limit": if (!isEmpty(attributes.queryParams.limit)) attributes.queryParams.limit else null,
-	"offset": if (!isEmpty(attributes.queryParams.offset)) attributes.queryParams.offset else null 
+	"offset": if (!isEmpty(attributes.queryParams.offset)) attributes.queryParams.offset else null,
+	"currencyCode":  if (!isEmpty(attributes.queryParams.currencyCode)) attributes.queryParams.currencyCode else null,
 }]]]></http:query-params>
 				</http:request>
 				<error-handler >
