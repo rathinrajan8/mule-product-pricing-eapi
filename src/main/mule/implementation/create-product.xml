@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Product_Pricing_PAPI_Request" doc:name="HTTP Request configuration" doc:id="e5ad6fa7-aeb2-4418-b257-3271c048cb63" basePath="${product-pricing-papi.basePath}" responseTimeout="${product-pricing-papi.timeout}" sendCorrelationId="ALWAYS">
+        <http:request-connection protocol="HTTPS" host="${product-pricing-papi.host}" port="${product-pricing-papi.port}" />
+    </http:request-config>
+	<sub-flow name="create-product-Sub-Flow" doc:id="6758b29f-8dda-443a-af11-5c110447bcdc" >
+		<logger level="INFO" doc:name="create flow starts" doc:id="792a77b9-1813-47f1-a1f5-65ea6173944c" message="create flow starts" />
+		<ee:transform doc:name="Set Method and Path" doc:id="ed8b91ba-e811-411f-8bf6-9ade39247dd4">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="method"><![CDATA["POST"]]></ee:set-variable>
+				<ee:set-variable variableName="path"><![CDATA[p('product-pricing-papi.createProductPath')]]></ee:set-variable>
+				<ee:set-variable variableName="productMapping"><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="currencyCode"><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.currencyCode]]></ee:set-variable>
+				<ee:set-variable variableName="operation"><![CDATA["CREATE"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Call Mule Pricing Papi" doc:id="3eae9e47-9a36-40df-8564-6750bd20d1cd" name="product-pricing-papi-request-common-flow"/>
+		<choice doc:name="Choice" doc:id="b82b9658-032a-45cf-8526-6457cc155785" >
+			<when expression="#[isEmpty(vars.errorPayload)]">
+				<ee:transform doc:name="Convert to Json" doc:id="b05cddc8-fdb8-4ca7-a378-5c1bdd40cf70">
+			<ee:message>
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload
+]]></ee:set-payload>
+			
+</ee:message>
+		</ee:transform>
+			
+</when>
+			<otherwise >
+				<raise-error doc:name="Raise SFDC:CREATE_PRODUCTS_FAILED Error" doc:id="bdc1b3dd-cf61-4e6d-aead-e2021caec1bf" type="SFDC:CREATE_PRODUCTS_FAILED" description="#[vars.errorPayload]" />
+			</otherwise>
+		
+</choice>
+		<logger level="INFO" doc:name="Create flow ends" doc:id="263c7da8-5ab4-4d63-ad56-cb469a3f5822" message="Create flow ends"/>
+	
+</sub-flow>
+
+</mule>

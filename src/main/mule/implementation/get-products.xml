@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="get-products-Sub-Flow" doc:id="97f0d1f8-98ac-40af-bbc9-c5c1430d2b5d" >
+		<logger level="INFO" doc:name="get flow starts" doc:id="3d61af6b-481d-40f5-af59-e178bad5b6df" message="get  flow starts" />
+		<ee:transform doc:name="Set Method, Path and Currency Code" doc:id="f84f1813-6574-46c0-8d39-fb23d52c9c8f">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="method"><![CDATA["GET"]]></ee:set-variable>
+				<ee:set-variable variableName="path"><![CDATA[p('product-pricing-papi.getProductPath')]]></ee:set-variable>
+				<ee:set-variable variableName="currencyCode"><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.currencyCode]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Call Mule Product Pricing Papi" doc:id="dfad1fd6-e2c9-4069-95a8-c3e46a2757f4" name="product-pricing-papi-request-common-flow" />
+		
+		<choice doc:name="Choice" doc:id="9e018399-5432-4c0d-a8b1-818eac0e0290">
+			<when expression="#[isEmpty(vars.errorPayload)]">
+				<ee:transform doc:name="Convert to Json" doc:id="d005c1b2-6d98-4c58-a569-d51d262014d3">
+			<ee:message>
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+
+			</ee:message>
+					<ee:variables >
+					</ee:variables>
+		</ee:transform>
+			</when>
+			<otherwise>
+				<raise-error doc:name="Raise SFDC:RETRIEVE_PRODUCTS_FAILED Error" doc:id="7db73433-e1c6-49a1-898d-235fddc23410" type="SFDC:RETRIEVE_PRODUCTS_FAILED" description="#[vars.errorPayload]" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="get flow ends" doc:id="bba7a60c-7904-45b7-93bc-548c6336aca3" message="get  flow ends"/>
+	
+</sub-flow></mule>

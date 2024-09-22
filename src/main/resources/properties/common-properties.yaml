@@ -1,0 +1,17 @@
+api:
+  name: "mule-product-pricing-eapi"
+
+https:
+  host: "0.0.0.0"
+  port: "8081"
+  timeout: "120000"
+  
+product-pricing-papi:
+  basePath: "/api"
+  createProductPath: "/products/create" 
+  updateProductPath: "/products/{productId}/update"
+  deleteProductPath: "/products/{productId}/delete"
+  getProductPath: "/products"
+  healthCheckPath: "/healthcheck"
+  timeout: "120000"
+  httpRetryErrorCodes: "HTTP:CONNECTIVITY,HTTP:TIMEOUT,HTTP:INTERNAL_SERVER_ERROR"

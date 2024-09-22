@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="health-check-Sub-Flow" doc:id="e6708085-97ac-4b1c-ab80-095d088ee8b0" >
+		<logger level="INFO" doc:name="heathCheck flow starts" doc:id="1c928880-a2eb-4195-8df5-0ef211e75e31" message="heathCheck flow starts"/>
+		<ee:transform doc:name="Set Method and Path" doc:id="3ef8de88-03b9-4be0-a450-ed0d0d1aaf63">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="method"><![CDATA["GET"]]></ee:set-variable>
+				<ee:set-variable variableName="path"><![CDATA[p('product-pricing-papi.healthCheckPath')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Call Mule Product Pricing Papi" doc:id="2f1994ff-8404-45ba-84db-d28df1944fd1" name="product-pricing-papi-request-common-flow" />
+		<logger level="INFO" doc:name="health Check flow ends" doc:id="5ee6b1d6-6b3d-4bc8-87f9-250409ae70cf" message="heakthCheck flow ends"/>
+	
+</sub-flow></mule>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<sub-flow name="product-pricing-papi-request-common-flow" doc:id="c69fd689-8527-4563-bb22-47783bb9a444" >
+		<until-successful maxRetries="${max.retry}" doc:name="Retry" doc:id="9c484892-8620-410a-b265-2785e707d397" millisBetweenRetries="${max.time}" >
+			<try doc:name="Try" doc:id="6095b899-5ce8-43d1-8275-c41e9bab3f0b" >
+				<http:request method="#[vars.method]" doc:name="Call Product Pricing PAPI" doc:id="49dcd87e-21e0-485a-a3c8-4d901a083d11" config-ref="HTTP_Product_Pricing_PAPI_Request" path="#[vars.path]" sendCorrelationId="ALWAYS">
+					<http:headers ><![CDATA[#[output application/java
+---
+{
+	'client-id' : p('secure::product.pricing.papi.clientId'),
+	'client-secret' : p('secure::product.pricing.papi.clientSecret'),
+	'x-correlation-id': attributes.headers.'x-correlation-id'
+}]]]></http:headers>
+					<http:uri-params ><![CDATA[#[%dw 2.0
+output application/json
+---
+if (!isEmpty(attributes.uriParams.productId)) {
+			productId: attributes.uriParams.productId 
+	}
+	else {}]]]></http:uri-params>
+					<http:query-params ><![CDATA[#[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+{
+	"limit": if (!isEmpty(attributes.queryParams.limit)) attributes.queryParams.limit else null,
+	"offset": if (!isEmpty(attributes.queryParams.offset)) attributes.queryParams.offset else null 
+}]]]></http:query-params>
+				</http:request>
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1c69e797-2bf9-4abc-b3b6-9e3964437eb3" type="${product-pricing-papi.httpRetryErrorCodes}" >
+						<logger level="ERROR" doc:name="Log Error Occured" doc:id="611d3aa3-4c32-4efc-8631-f3e6fd4722b3" message='#["Recoverable Error Occured - Retrying"]' />
+					</on-error-propagate>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a72b51bd-fcaf-402f-8ebb-5d199be5716e" type="ANY" >
+						<logger level="ERROR" doc:name="Log Error Occured" doc:id="3ed2ba9d-87ed-40e8-8050-67ec2c02895a" message='#["Unrecoverable Error Occured"]' />
+						<set-variable value="#[error.muleMessage.payload default error.description]" doc:name="Error Payload" doc:id="2e4f5c92-db0d-44b4-8afb-3aa0257e9c2f" variableName="errorPayload" />
+						<logger level="INFO" doc:name="Log Error" doc:id="74df0a76-5125-4cdf-9225-9dd66318ac92" message='#["Product Creation Error - " ++ error.description]' />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</until-successful>
+	</sub-flow>
+</mule>

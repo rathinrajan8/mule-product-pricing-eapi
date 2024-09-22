@@ -1,0 +1,7 @@
+product.pricing.papi:
+  clientId: "![k0cj9FZbTDYn86MZS6VV+7TvU4WUb6kipLr0osUrX7vyUQdfDRYBYg==]"
+  clientSecret: "![tIc9YD6a4tTK/JnZsoH1qKCKRUVn8IZur4k3eoXelu+Ry4EztzWvbg==]"
+truststore:
+  password: "![4A1ss200M1PLXL5WKHUtUQ==]"
+keystore:
+  password: "![4A1ss200M1PLXL5WKHUtUQ==]"
